@@ -1,10 +1,16 @@
-# Getting Started with Create React App
+# Taskger
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a project to manage tasks of team works.
 
-## Available Scripts
+## Clone Project
 
-In the project directory, you can run:
+First you should clone this repository, you can run:
+
+### `git clone https://github.com/MarielaRH/taskger_react.git`
+
+## Run Project
+
+After in the project directory, you can run:
 
 ### `npm start`
 
@@ -12,35 +18,49 @@ Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
+When the project is running it will be necessary add into the file App.tsx the token for the project can make the queries and mutations to the API. Into this file there is a variable named 'token'.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## About Project
 
-### `npm run build`
+This project has the ability to create, update and delete tasks, each task need a name, user assignee, due date, status and tags to be clasificate.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Within the project there are three main routes:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+##### `/` and `/tasger` shows dashboard-page
+##### `/mytasks` shows my-tasks-page
+##### `/settings` shows profile-page
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Core this project is the dashboard page, because in this page is where we can manage tasks, within dashboard page there are five columns in which tasks will be clasificated by status, that columns are:
 
-### `npm run eject`
+* `Todo`
+* `In Progress`
+* `Backlog`
+* `Cancelled`
+* `Done`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The following libraries were used to build this project:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+* [React 18.2.0](https://es.reactjs.org/) for build the project
+* [Tailiwind css](https://tailwindcss.com/) for styles
+* [MUI](https://mui.com/) for some components
+* [Material Tailwind](https://www.material-tailwind.com/) for some components
+* [Graphql](https://graphql.org/) and [Apollo Client](https://www.apollographql.com/docs/react/) for connect with the API
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Project Images
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Dashboard page with sidebar hide
+<img src="https://github.com/MarielaRH/taskger_react/blob/main/src/public/screenshots/dashboard2.png">
 
-## Learn More
+### Dashboard page showing sidebar 
+<img src="https://github.com/MarielaRH/taskger_react/blob/main/src/public/screenshots/dashboard.png">
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Profile page
+<img src="https://github.com/MarielaRH/taskger_react/blob/main/src/public/screenshots/profile.png">
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Task car
+<img src="https://github.com/MarielaRH/taskger_react/blob/main/src/public/screenshots/taskcard.png">
+
+### Form for create and update a task
+<img src="https://github.com/MarielaRH/taskger_react/blob/main/src/public/screenshots/tasksform.png">
+
