@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { menuItem } from "../../utils/constants";
 import { SideBarItem } from './Components/SideBarItem/SideBarItem';
-import { menuItem } from "./SideBar.constants";
 
 export const SideBar = () => {
   const [sideBarVisible, setSideBarVisible] = useState(false);

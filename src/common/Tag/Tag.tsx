@@ -1,9 +1,8 @@
-import { Task, TaskTag } from "../GridTasks/GridsTasks.interfaces";
-interface Props {
-  tag: string;
-}
+import { TaskTag } from "../../utils/constants";
+import { PropsTags } from "../../utils/interfaces";
 
-export const Tag: React.FC<Props> = ({ tag }) => {
+
+export const Tag: React.FC<PropsTags> = ({ tag }) => {
   return (
     <div className="flex justify-start">
       {tag === TaskTag[0] ? (

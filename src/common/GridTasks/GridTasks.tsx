@@ -1,91 +1,36 @@
 import { useQuery } from "@apollo/client";
 import { TasksCard } from "../TasksCard/TasksCard";
-import { headerColumns } from "./GridTasks.constants";
-import {
-  TODO_TASKS_QUERY,
-  IN_PROGRESS_TASKS_QUERY,
-  BACKLOG_TASKS_QUERY,
-  CANCELLED_TASKS_QUERY,
-  DONE_TASKS_QUERY,
-} from "./GridTasks.queries";
-import { useEffect, useState } from "react";
-import { Task, Status } from "./GridsTasks.interfaces";
-import { Loader } from "../Loader/Loader";
 
-export const GridTasks = () => {
+import { useEffect, useState } from "react";
+import { Loader } from "../Loader/Loader";
+import { Task } from "../../utils/interfaces";
+import { headerColumns, StatusList } from "../../utils/constants";
+import { TASKS_QUERY } from "../../utils/queries";
+interface Props {
+  setOpen: (showDialog: boolean) => void
+  setTaskDialog:  (task: Task|null) => void;
+}
+export const GridTasks: React.FC<Props>  = ({setOpen, setTaskDialog}) => {
   // Queries for get all tasks by status
   const {
-    loading: todoLoading,
-    error: todoError,
-    data: todoData,
-  } = useQuery(TODO_TASKS_QUERY);
-  const {
-    loading: inProgressLoading,
-    error: inProgressError,
-    data: inProgressData,
-  } = useQuery(IN_PROGRESS_TASKS_QUERY);
-  const {
-    loading: backLogLoading,
-    error: backLogError,
-    data: backLogData,
-  } = useQuery(BACKLOG_TASKS_QUERY);
-  const {
-    loading: cancelledLoading,
-    error: cancelledError,
-    data: cancelledData,
-  } = useQuery(CANCELLED_TASKS_QUERY);
-  const {
-    loading: doneLoading,
-    error: doneError,
-    data: doneData,
-  } = useQuery(DONE_TASKS_QUERY);
+    loading: taskLoading,
+    error: taskError,
+    data: taskData,
+  } = useQuery(TASKS_QUERY);
 
-  // states to save tasks by status/column
-  const [todoList, setTodoList] = useState<Task[]>([]);
-  const [inProgressList, setInProgressList] = useState<Task[]>([]);
-  const [backlogList, setBacklogList] = useState<Task[]>([]);
-  const [cancelledList, setCancelledList] = useState<Task[]>([]);
-  const [doneList, setDoneList] = useState<Task[]>([]);
+  // states to save tasks
+  const [taskList, setTaskList] = useState<Task[]>([]);
 
   // update states with queryset values
   useEffect(() => {
-    if (todoData) {
-      setTodoList(todoData.tasks);
+    if (taskData) {
+      setTaskList(taskData.tasks);
     }
-    if (inProgressData) {
-      setInProgressList(inProgressData.tasks);
-    }
-    if (backLogData) {
-      setBacklogList(backLogData.tasks);
-    }
-    if (cancelledData) {
-      setCancelledList(cancelledData.tasks);
-    }
-    if (doneData) {
-      setDoneList(doneData.tasks);
-    }
-    console.log(todoList);
-  }, [
-    todoData,
-    inProgressData,
-    backLogData,
-    cancelledData,
-    doneData,
-    todoList,
-    inProgressList,
-    backlogList,
-    cancelledList,
-    doneList,
-  ]);
+  }, [taskData, taskList]);
+
 
   //Verify if load ended
-  if (
-    todoLoading &&
-    inProgressLoading &&
-    backLogLoading &&
-    cancelledLoading &&
-    doneLoading
-  )
+  if (taskLoading)
     return (
       <div className="h-full w-full flex flex-col justify-center items-center">
         <Loader />
@@ -93,13 +38,7 @@ export const GridTasks = () => {
     );
 
   // verify if there is a error
-  if (
-    todoError ||
-    inProgressError ||
-    backLogError ||
-    cancelledError ||
-    doneError
-  )
+  if (taskError)
     return (
       <div className="h-full w-full flex flex-col justify-center items-center text-3xl font-light">
         Something failed, try it later
@@ -109,16 +48,28 @@ export const GridTasks = () => {
   const getTasksCount = (index: number) => {
     switch (index) {
       case 0:
-        return todoList.length;
+        return reduce(StatusList[0].value);
       case 1:
-        return inProgressList.length;
+        return reduce(StatusList[1].value);
       case 2:
-        return backlogList.length;
+        return reduce(StatusList[2].value);
       case 3:
-        return cancelledList.length;
+        return reduce(StatusList[3].value);
       case 4:
-        return doneList.length;
+        return reduce(StatusList[4].value);
     }
+  };
+
+  const reduce = (status: string) => {
+    const countTasks = taskList.reduce((count, task) => {
+      if (task.status === status) {
+        return count + 1;
+      } else {
+        return count;
+      }
+    }, 0);
+
+    return countTasks;
   };
 
   return (
@@ -141,72 +92,81 @@ export const GridTasks = () => {
             id="todo"
             className="flex flex-col min-h-[14rem] w-[348px] min-w-[348px] border-[1.5px] border-dashed rounded-lg p-2 border-neutral-300"
           >
-            {todoList.length > 0
-              ? todoList.map((task: Task) =>
-                  task.status === Status.TODO ? (
-                    <TasksCard task={task} key={task.id} />
-                  ) : null
-                )
-              : (
-                <div className="min-h-[14rem] w-[348px] min-w-[348px] flex justify-center items-center"><i className="fa-regular fa-folder text-6xl text-neutral-300"></i></div>
+            {taskList.length > 0 ? (
+              taskList.map((task: Task) =>
+                task.status === StatusList[0].value ? (
+                  <TasksCard setOpen={setOpen} setTaskDialog={setTaskDialog} task={task} key={task.id}  />
+                ) : null
               )
-              }
+            ) : (
+              <div className="min-h-[14rem] w-[348px] min-w-[348px] flex justify-center items-center">
+                <i className="fa-regular fa-folder text-6xl text-neutral-300"></i>
+              </div>
+            )}
           </div>
           <div
             id="inprogress"
             className="flex flex-col  w-[348px] min-w-[348px] border-[1.5px] border-dashed rounded-lg p-2 border-neutral-300"
           >
-            {inProgressList.length > 0
-              ? inProgressList.map((task: Task) =>
-                  task.status === Status.IN_PROGRESS ? (
-                    <TasksCard task={task} key={task.id} />
-                  ) : null
-                )
-              : (
-                <div className="min-h-[14rem] w-[348px] min-w-[348px] flex justify-center items-center"><i className="fa-regular fa-folder text-6xl text-neutral-300"></i></div>
-              )}
+            {taskList.length > 0 ? (
+              taskList.map((task: Task) =>
+                task.status === StatusList[1].value ? (
+                  <TasksCard setOpen={setOpen} setTaskDialog={setTaskDialog} task={task} key={task.id} />
+                ) : null
+              )
+            ) : (
+              <div className="min-h-[14rem] w-[348px] min-w-[348px] flex justify-center items-center">
+                <i className="fa-regular fa-folder text-6xl text-neutral-300"></i>
+              </div>
+            )}
           </div>
           <div
             id="backlog"
             className="flex flex-col  w-[348px] min-w-[348px] border-[1.5px] border-dashed rounded-lg p-2 border-neutral-300"
           >
-            {backlogList.length > 0
-              ? backlogList.map((task: Task) =>
-                  task.status === Status.BACKLOG ? (
-                    <TasksCard task={task} key={task.id} />
-                  ) : null
-                )
-              : (
-                <div className="min-h-[14rem] w-[348px] min-w-[348px] flex justify-center items-center"><i className="fa-regular fa-folder text-6xl text-neutral-300"></i></div>
-              )}
+            {taskList.length > 0 ? (
+              taskList.map((task: Task) =>
+                task.status === StatusList[2].value ? (
+                  <TasksCard setOpen={setOpen} setTaskDialog={setTaskDialog} task={task} key={task.id} />
+                ) : null
+              )
+            ) : (
+              <div className="min-h-[14rem] w-[348px] min-w-[348px] flex justify-center items-center">
+                <i className="fa-regular fa-folder text-6xl text-neutral-300"></i>
+              </div>
+            )}
           </div>
           <div
             id="canceled"
             className="flex flex-col  w-[348px] min-w-[348px] border-[1.5px] border-dashed rounded-lg p-2 border-neutral-300"
           >
-            {cancelledList.length > 0
-              ? cancelledList.map((task: Task) =>
-                  task.status === Status.CANCELLED ? (
-                    <TasksCard task={task} key={task.id} />
-                  ) : null
-                )
-              : (
-                <div className="min-h-[14rem] w-[348px] min-w-[348px] flex justify-center items-center"><i className="fa-regular fa-folder text-6xl text-neutral-300"></i></div>
-              )}
+            {taskList.length > 0 ? (
+              taskList.map((task: Task) =>
+                task.status === StatusList[3].value ? (
+                  <TasksCard setOpen={setOpen} setTaskDialog={setTaskDialog} task={task} key={task.id} />
+                ) : null
+              )
+            ) : (
+              <div className="min-h-[14rem] w-[348px] min-w-[348px] flex justify-center items-center">
+                <i className="fa-regular fa-folder text-6xl text-neutral-300"></i>
+              </div>
+            )}
           </div>
           <div
             id="done"
             className="flex flex-col  w-[348px] min-w-[348px] border-[1.5px] border-dashed rounded-lg p-2 border-neutral-300"
           >
-            {doneList.length > 0
-              ? doneList.map((task: Task) =>
-                  task.status === Status.DONE ? (
-                    <TasksCard task={task} key={task.id} />
-                  ) : null
-                )
-              : (
-                <div className="min-h-[14rem] w-[348px] min-w-[348px] flex justify-center items-center"><i className="fa-regular fa-folder text-6xl text-neutral-300"></i></div>
-              )}
+            {taskList.length > 0 ? (
+              taskList.map((task: Task) =>
+                task.status === StatusList[4].value ? (
+                  <TasksCard setOpen={setOpen} setTaskDialog={setTaskDialog} task={task} key={task.id} />
+                ) : null
+              )
+            ) : (
+              <div className="min-h-[14rem] w-[348px] min-w-[348px] flex justify-center items-center">
+                <i className="fa-regular fa-folder text-6xl text-neutral-300"></i>
+              </div>
+            )}
           </div>
         </div>
       </div>

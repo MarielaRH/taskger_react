@@ -1,15 +1,21 @@
 import { Profile } from "../Profile/Profile";
-import TasksActions from "../TasksActions/TasksActions";
 import * as React from "react";
-import { Task, PointEstimate, Data } from "../GridTasks/GridsTasks.interfaces";
-import { stringify } from "querystring";
 import { Tag } from "../Tag/Tag";
+import { TasksActions } from "../TasksActions/TasksActions";
+import { Task } from "../../utils/interfaces";
+import { PointEstimate } from "../../utils/constants";
 
-interface Props {
+import { TransitionProps } from "@mui/material/transitions";
+
+interface PropsTaskCard  {
   task: Task;
+  setOpen: (showDialog: boolean ) => void
+  setTaskDialog:  (task: Task|null) => void;
 }
 
-export const TasksCard: React.FC<Props> = ({ task }) => {
+
+
+export const TasksCard: React.FC<PropsTaskCard> = ({ task, setOpen, setTaskDialog }) => {
   // format pointEstimate
   const formatPointEstimate = (pointEstimate: string) => {
     if (pointEstimate === PointEstimate[0].value) {
@@ -100,7 +106,7 @@ export const TasksCard: React.FC<Props> = ({ task }) => {
     <div className="min-h-[208px] bg-neutral-400 rounded-[8px] p-4 flex flex-col mb-4">
       <div className="flex flex-row justify-between items-center pb-5">
         <p className="font-semibold text-base">{task.name}</p>
-        <TasksActions />
+        <TasksActions setOpen={setOpen} setTaskDialog={setTaskDialog} task={task}/>
       </div>
       <div className="flex flex-row justify-between items-center pb-5">
         <p className="font-semibold text-base">
@@ -122,6 +128,7 @@ export const TasksCard: React.FC<Props> = ({ task }) => {
       </div>
       <div className="flex flex-row justify-between items-center">
         <Profile
+        width={36}
           url={
             task.assignee && task.assignee.avatar ? task.assignee.avatar : null
           }

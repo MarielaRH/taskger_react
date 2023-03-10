@@ -2,18 +2,11 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { IconButton } from "@material-tailwind/react";
 import { ChangeEvent, useEffect, useState } from "react";
-import {
-  PointEstimate,
-  PointEstimate_type,
-  User,
-  TaskTag,
-} from "../../common/GridTasks/GridsTasks.interfaces";
+
 import { useMutation, useQuery } from "@apollo/client";
-import { CREATE_TASK_MUTATION, USERS_TASKS_QUERY } from "./TasksForm.queries";
+
 import {
   Checkbox,
   FormControl,
@@ -28,46 +21,103 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import dayjs, { Dayjs } from "dayjs";
-import { Status } from '../../common/GridTasks/GridsTasks.interfaces';
+import { CREATE_TASK_MUTATION, TASKS_QUERY, UPDATE_TASK_MUTATION, USERS_TASKS_QUERY } from "../../utils/queries";
+import { MenuProps, PointEstimate, StatusList, TaskTag } from "../../utils/constants";
+import { Task, User } from "../../utils/interfaces";
+import { PointEstimate_type, status_type } from "../../utils/types";
 
-// configurations to inputLabel
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-    },
-  },
-};
+interface Props {
+  showDialog: boolean;
+  setOpen: (showDialog: boolean) => void;
+  task: Task | null;
+}
 
-export const TasksForm = () => {
-  const { loading, error, data } = useQuery(USERS_TASKS_QUERY);
-  const [createTask, { loading: loadingMutation, error: errorMutation }] =
-    useMutation(CREATE_TASK_MUTATION);
-  const [open, setOpen] = useState(false);
+export const TasksForm: React.FC<Props> = ({ showDialog, setOpen, task }) => {
   const [userList, setUserList] = useState<User[]>([]);
-  const [titleTask, setTitleTask] = useState<string>('');
+  const [titleTask, setTitleTask] = useState<string>("");
   const [estimate, setEstimate] = useState<PointEstimate_type | null>(null);
   const [tag, setTag] = useState<string[]>([]);
   const [assignee, setAssignee] = useState<string | null>(null);
   const [date, setDate] = useState<Dayjs | string>(dayjs());
+  const [status, setStatus] = useState<string>("");
+
+  // queries
+  const { loading, error, data } = useQuery(USERS_TASKS_QUERY);
+
+  const [createTask] = useMutation(CREATE_TASK_MUTATION, {
+    update(cache, { data: { createTask } }) {
+      const { tasks }: any = cache.readQuery({ query: TASKS_QUERY });
+      if (tasks) {
+        cache.writeQuery({
+          query: TASKS_QUERY,
+          data: {
+            tasks: [createTask],
+          },
+        });
+      }
+    },
+  });
+
+  const [updateTask] = useMutation(UPDATE_TASK_MUTATION, {
+    update(cache, { data: { updateTask } }) {
+      if (updateTask) {
+        cache.modify({
+          fields: {
+            items(existingTask = [], { readField }) {
+              return existingTask.map((task: any) => {
+                if (readField("id", task) === data.updateItem.id) {
+                  return data.updateItem;
+                }
+                return task;
+              });
+            },
+          },
+        });
+      }
+    },
+  });
+
 
   useEffect(() => {
     if (data) {
       setUserList(data.users);
     }
-  }, [data, userList]);
+
+    if (task) {
+      setTitleTask(task.name);
+      setEstimate(task.pointEstimate);
+      setAssignee(task.assignee.fullName);
+      setTag(task.tags);
+      setDate(dayjs(task.dueDate));
+
+      switch (task.status) {
+        case StatusList[0].value:
+          setStatus(StatusList[0].value);
+          break;
+        case StatusList[1].value:
+          setStatus(StatusList[1].value);
+          break;
+        case StatusList[2].value:
+          setStatus(StatusList[2].value);
+          break;
+        case StatusList[3].value:
+          setStatus(StatusList[3].value);
+          break;
+        case StatusList[4].value:
+          setStatus(StatusList[4].value);
+          break;
+      }
+    }
+  }, [data, userList, task]);
 
   const handleVisibilityDialog = () => {
-    open ? setOpen(false) : setOpen(true);
+    showDialog ? setOpen(false) : setOpen(true);
 
-    setTitleTask('');
+    setTitleTask("");
     setAssignee(null);
     setEstimate(null);
     setTag([]);
-    setDate(dayjs())
-
+    setDate(dayjs());
   };
 
   // handle name of a task
@@ -80,6 +130,11 @@ export const TasksForm = () => {
   // handle the point_estimate of a task
   const handleChangeEstimate = (event: SelectChangeEvent) => {
     setEstimate(event.target.value as PointEstimate_type);
+  };
+
+  // handle the point_estimate of a task
+  const handleChangeStatus = (event: SelectChangeEvent) => {
+    setStatus(event.target.value as status_type);
   };
 
   // handle labels of a task
@@ -105,37 +160,44 @@ export const TasksForm = () => {
 
   const getUserId = () => {
     const user = userList.filter((user) => user.fullName === assignee);
-    return user[0].id
+    return user[0].id;
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const createTaskInput = {
-      assigneeId: getUserId(),
-      dueDate: dayjs(date).toISOString(),
-      name: titleTask,
-      pointEstimate: estimate,
-      status: Status.TODO,
-      tags: tag,
-    };
-
-    createTask({
-      variables: { input: createTaskInput },
-    });
+    if (!task) {
+      const createTaskInput = {
+        assigneeId: getUserId(),
+        dueDate: dayjs(date).toISOString(),
+        name: titleTask,
+        pointEstimate: estimate,
+        status: StatusList[0].value,
+        tags: tag,
+      };
+      createTask({
+        variables: { input: createTaskInput },
+      });
+    }else{
+       const updateTaskInput = {
+        id: task.id,
+        assigneeId: getUserId(),
+        dueDate: dayjs(date).toISOString(),
+        name: titleTask,
+        pointEstimate: estimate,
+        status: status,
+        tags: tag,
+      };
+      updateTask({
+        variables: { input: updateTaskInput },
+      });
+    }
 
     handleVisibilityDialog();
   };
 
   return (
     <div>
-      <IconButton
-        onClick={handleVisibilityDialog}
-        className="bg-primary-400 shadow-none hover:shadow-none hover:scale-90 w-[35px] h-[35px] focus-visible:focus:outline-none"
-      >
-        <i className="fa-solid fa-plus text-lg font-normal"></i>
-      </IconButton>
-
-      <Dialog open={open} onClose={() => {}} className="w-full">
+      <Dialog open={showDialog} onClose={() => {}} className="w-full">
         <div className="bg-neutral-300 rounded-none text-neutral-100 p-2">
           <DialogTitle className="bg-neutral-300">
             <input
@@ -156,7 +218,7 @@ export const TasksForm = () => {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={estimate ? estimate : ''}
+                    value={estimate ? estimate : ""}
                     label="Estimate"
                     onChange={handleChangeEstimate}
                   >
@@ -167,6 +229,27 @@ export const TasksForm = () => {
                     ))}
                   </Select>
                 </FormControl>
+
+                {task ? (
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Status
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status ? status : ""}
+                      label="Status"
+                      onChange={handleChangeStatus}
+                    >
+                      {StatusList.map((item) => (
+                        <MenuItem value={item.value} key={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : null}
                 <FormControl fullWidth>
                   <InputLabel id="demo-multiple-checkbox-label">
                     Label
@@ -198,7 +281,7 @@ export const TasksForm = () => {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={assignee ? assignee : ''}
+                    value={assignee ? assignee : ""}
                     label="Assignee"
                     onChange={handleChangeUser}
                   >
@@ -236,9 +319,15 @@ export const TasksForm = () => {
                 variant="contained"
                 type="submit"
                 className="bg-primary-400 disabled:opacity-50"
-                disabled={titleTask === null || estimate === null || tag.length === 0 || assignee === null}
+                disabled={
+                  titleTask === null ||
+                  titleTask.length === 0 ||
+                  estimate === null ||
+                  tag.length === 0 ||
+                  assignee === null
+                }
               >
-                <div className="capitalize font-normal text-base">Create</div>
+                <div className="capitalize font-normal text-base">{task ? 'Save Changes' : 'Create'}</div>
               </Button>
             </DialogActions>
           </form>

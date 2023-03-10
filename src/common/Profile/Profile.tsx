@@ -1,12 +1,17 @@
-
-import { Avatar } from "@material-tailwind/react";
-
+import Avatar from '@mui/material/Avatar';
 interface Props {
-  url: string | null
+  url: string | null;
+  width: number
 }
 
-export const Profile: React.FC<Props> = ({url}) => {
+export const Profile: React.FC<Props> = ({ url, width}) => {
+
   return (
-    <Avatar src={url ? url : require("../../public/img/profile.png")} alt="avatar" variant="circular" size="sm" className="static" />
-  )
-}
+    <Avatar
+      alt="Remy Sharp"
+      src={url ? url : require("../../public/img/profile.png")}
+      sx={{ width: width, height: width }}
+    />
+    // <Avatar src={url ? url : require("../../public/img/profile.png")} alt="avatar" variant="circular" size={size} className="static" />
+  );
+};

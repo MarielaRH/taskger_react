@@ -33,7 +33,7 @@ export const SearchBar = () => {
           width={18}
           className="mr-4 cursor-pointer"
         />
-        <Profile url={null}/>
+        <Profile width={36} url={null}/>
       </div>
     </div>
   );
