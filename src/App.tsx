@@ -20,7 +20,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 
 const token =
-  ".eyJwb3NpdGlvbklkIjoiNjQ3ODEyZjgyMzIwIiwicHJvamVjdElkIjoiYmZkMDYzNDMtMWJjNS00NmQ2LTgzNjItMzU2N2ViYjU3ODgwIiwiZnVsbE5hbWUiOiJNYXJpZWxhIGRlIEplc8O6cyBSaXZhcyBIZXJuw6FuZGV6IiwiZW1haWwiOiJtYXJpZWxhLnJpdmFzLmhkekBnbWFpbC5jb20iLCJpYXQiOjE2Nzc3ODI1MjR9.dhkZC1ok1vSDcfTLD3hInS0GH_w1O5QwgnFYvyXGfr8";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwb3NpdGlvbklkIjoiNjQ3ODEyZjgyMzIwIiwicHJvamVjdElkIjoiYmZkMDYzNDMtMWJjNS00NmQ2LTgzNjItMzU2N2ViYjU3ODgwIiwiZnVsbE5hbWUiOiJNYXJpZWxhIGRlIEplc8O6cyBSaXZhcyBIZXJuw6FuZGV6IiwiZW1haWwiOiJtYXJpZWxhLnJpdmFzLmhkekBnbWFpbC5jb20iLCJpYXQiOjE2Nzc3ODI1MjR9.dhkZC1ok1vSDcfTLD3hInS0GH_w1O5QwgnFYvyXGfr8";
 
 const httpLink = createHttpLink({
   uri: "https://syn-api-prod.herokuapp.com/graphql",

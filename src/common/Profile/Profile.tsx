@@ -1,11 +1,10 @@
-import Avatar from '@mui/material/Avatar';
+import Avatar from "@mui/material/Avatar";
 interface Props {
   url: string | null;
-  width: number
+  width: number;
 }
 
-export const Profile: React.FC<Props> = ({ url, width}) => {
-
+export const Profile: React.FC<Props> = ({ url, width }) => {
   return (
     <Avatar
       alt="Remy Sharp"

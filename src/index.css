@@ -163,3 +163,8 @@ code {
   );
 
 }
+
+
+.MuiAvatar-root.MuiAvatar-circular{
+   position: static;
+}

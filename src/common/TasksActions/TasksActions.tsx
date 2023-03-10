@@ -110,13 +110,13 @@ export const TasksActions: React.FC<Props> = ({
           <MenuItem onClick={handlerDialog}>
             <div className="flex items-center">
               <i className="fa-solid fa-pencil pr-3"></i>
-              <p className="font-medium">Editar</p>
+              <p className="font-medium">Edit</p>
             </div>
           </MenuItem>
           <MenuItem onClick={handleConfirmDialog}>
             <div className="flex items-center">
               <i className="fa-solid fa-trash pr-3"></i>
-              <p className="font-medium">Eliminar</p>
+              <p className="font-medium">Delete</p>
             </div>
           </MenuItem>
         </MenuList>

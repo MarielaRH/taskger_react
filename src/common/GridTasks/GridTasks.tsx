@@ -75,7 +75,7 @@ export const GridTasks: React.FC<Props>  = ({setOpen, setTaskDialog}) => {
   return (
     <div className="flex flex-col h-full gap-y-3 gap-x-6 overflow-y-auto container-scrollbar-style pr-1">
       <div className="flex flex-col w-fit sticky top-0 bg-neutral-500 pb-1">
-        <div className="flex flex-row w-full gap-y-3 gap-x-6">
+        <div className="flex flex-row w-full gap-y-3 gap-x-6 z-[100000]">
           {headerColumns.map((item, index) => (
             <div
               className="flex flex-col  w-[348px] min-w-[348px] font-medium"
