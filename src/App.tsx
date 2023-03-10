@@ -1,7 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { DashboardPage } from "./pages/DashboardPage/DashboardPage";
-import { LandingPage } from "./pages/LandingPage/LandingPage";
 import { Container } from "./layout/Container/Container";
 import { MyTasksPage } from "./pages/MyTasksPage/MyTasksPage";
 import { NotFoundPage } from "./pages/NotFoundPage/NotFoundPage";
@@ -20,7 +19,8 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
-const token = '';
+const token =
+  ".eyJwb3NpdGlvbklkIjoiNjQ3ODEyZjgyMzIwIiwicHJvamVjdElkIjoiYmZkMDYzNDMtMWJjNS00NmQ2LTgzNjItMzU2N2ViYjU3ODgwIiwiZnVsbE5hbWUiOiJNYXJpZWxhIGRlIEplc8O6cyBSaXZhcyBIZXJuw6FuZGV6IiwiZW1haWwiOiJtYXJpZWxhLnJpdmFzLmhkekBnbWFpbC5jb20iLCJpYXQiOjE2Nzc3ODI1MjR9.dhkZC1ok1vSDcfTLD3hInS0GH_w1O5QwgnFYvyXGfr8";
 
 const httpLink = createHttpLink({
   uri: "https://syn-api-prod.herokuapp.com/graphql",
@@ -65,7 +65,7 @@ function App() {
         <ErrorBoundary>
           <Container>
             <Routes>
-              <Route path="/" element={<LandingPage />}></Route>
+              <Route path="/"  element={<DashboardPage />}></Route>
               <Route path="/taskger" element={<DashboardPage />}></Route>
               <Route path="/mytasks" element={<MyTasksPage />}></Route>
               <Route path="/settings" element={<ProfilePage />}></Route>
