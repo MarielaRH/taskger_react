@@ -1,6 +1,6 @@
 import { IconButton } from "@material-tailwind/react";
 import { useState } from "react";
-import { PropsActionsBar, Task } from "../../utils/interfaces";
+import { PropsActionsBar } from "../../utils/interfaces";
 import { Options } from "../../utils/types";
 
 

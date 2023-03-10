@@ -153,3 +153,13 @@ code {
       transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1.5%));
    }
 }
+
+.background-profile {
+  background: rgb(226, 125, 115);
+  background: linear-gradient(
+    17deg,
+    rgba(226, 125, 115, 1) 30%,
+    rgba(235, 199, 127, 1) 71%
+  );
+
+}

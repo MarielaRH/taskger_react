@@ -12,6 +12,5 @@ export const Profile: React.FC<Props> = ({ url, width}) => {
       src={url ? url : require("../../public/img/profile.png")}
       sx={{ width: width, height: width }}
     />
-    // <Avatar src={url ? url : require("../../public/img/profile.png")} alt="avatar" variant="circular" size={size} className="static" />
   );
 };
